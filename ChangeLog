@@ -10,7 +10,8 @@
     CMake 3.12 or newer is required
     Options are renamed: ENABLE_EXAMPLES is now COLPACK_ENABLE_EXAMPLES, ENABLE_OPENMP is now COLPACK_ENABLE_OPENMP
     The recovery routines in src/Recovery are now compiled into the library
-    OpenMP is linked via OpenMP::OpenMP_CXX, which fixes the build on macOS with libomp from Homebrew
+    OpenMP is linked via OpenMP::OpenMP_CXX, which fixes the build on macOS with libomp from Homebrew.
+      Only the CXX component of OpenMP is required, also if a parent project enables C or Fortran
     MSVC is supported. It builds with /openmp:llvm, because OpenMP 2.0 does not support unsigned loop indices.
       This requires CMake 3.30 or newer.
     Windows builds use short intermediate paths (CMAKE_INTERMEDIATE_DIR_STRATEGY=SHORT), because the object paths
