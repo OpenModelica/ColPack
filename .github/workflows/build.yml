@@ -34,7 +34,7 @@ jobs:
       - name: Configure
         run: |
           cmake -S . -B build -G "Unix Makefiles" \
-            -DENABLE_EXAMPLES=ON \
+            -DCOLPACK_ENABLE_EXAMPLES=ON \
             -DCMAKE_BUILD_TYPE=${{ matrix.build-type }}
 
       - name: Build
@@ -76,7 +76,7 @@ jobs:
       - name: Configure
         run: |
           cmake -S . -B build -G "MSYS Makefiles" \
-            -DENABLE_EXAMPLES=ON \
+            -DCOLPACK_ENABLE_EXAMPLES=ON \
             -DCMAKE_BUILD_TYPE=${{ matrix.build-type }}
 
       - name: Build
@@ -105,7 +105,7 @@ jobs:
       - name: Configure
         run: |
           cmake -S . -B build -G "Unix Makefiles" \
-            -DENABLE_EXAMPLES=ON \
+            -DCOLPACK_ENABLE_EXAMPLES=ON \
             -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} \
             -DOpenMP_ROOT=$(brew --prefix libomp)
 
