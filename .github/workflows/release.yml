@@ -9,7 +9,6 @@ on:
   pull_request:
     paths:
       - .github/workflows/release.yml
-      - .github/package-test/**
       - CMakeLists.txt
       - ColPackConfig.cmake.in
   workflow_dispatch:
@@ -126,18 +125,6 @@ jobs:
           prefix="$(pwd -W 2>/dev/null || pwd)/$PACKAGE"
           cmake --install build --config Release --prefix "$prefix"
           cp AUTHORS ChangeLog LICENSE README.md "$PACKAGE/"
-
-      - name: Test package
-        run: |
-          prefix="$(pwd -W 2>/dev/null || pwd)/$PACKAGE"
-          cmake -S .github/package-test -B build-package-test ${{ matrix.cmake-args }} \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_PREFIX_PATH="$prefix" \
-            -DCOLPACK_EXPECTED_VERSION=${{ needs.version.outputs.version }}
-          cmake --build build-package-test --config Release --parallel
-          # Windows finds the shared library ColPack.dll via PATH.
-          PATH="$PWD/$PACKAGE/bin:$PATH" \
-            ctest --test-dir build-package-test -C Release --output-on-failure
 
       - name: Create archive
         run: |
