@@ -145,7 +145,7 @@ set(COLPACK_SOURCE_INCLUDE_DIRS
 # Static library.
 # ---------------
 add_library(ColPack_static STATIC ${HEADERS} ${SOURCES})
-if(NOT WIN32)
+if(NOT WIN32 OR NOT COLPACK_BUILD_SHARED)
     # On Windows, the static and shared libraries can't have the same
     # name (because both have .lib files that will conflict).
     set_target_properties(ColPack_static PROPERTIES OUTPUT_NAME ColPack)

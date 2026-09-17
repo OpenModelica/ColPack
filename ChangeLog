@@ -19,7 +19,8 @@
       and all generated files are written to the current binary directory instead of the top-level one
     New option COLPACK_ENABLE_TESTS builds the ColPack executable and the Basic examples and adds them as tests.
       It defaults to ON only if ColPack is the top-level project
-    New option COLPACK_BUILD_SHARED (default ON) to skip building the shared library
+    New option COLPACK_BUILD_SHARED (default ON) to skip building the shared library.
+      Without the shared library the static library is named ColPack on Windows, too
   Installed CMake package
     All headers are installed to include/ColPack, and the exported targets use this include directory.
       Previously the Recovery headers were missing and the include directory was wrong.
