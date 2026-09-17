@@ -1,0 +1,26 @@
+name: format
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  clang-format:
+    name: clang-format
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
+
+      # Pin the version, the formatting differs between clang-format releases.
+      - name: Check formatting
+        run: |
+          git ls-files -z '*.c' '*.cpp' '*.h' '*.hpp' |
+            xargs -0 pipx run clang-format==23.1.1 --dry-run --Werror
