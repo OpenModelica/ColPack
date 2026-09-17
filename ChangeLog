@@ -3,6 +3,8 @@
   First release of the fork https://github.com/OpenModelica/ColPack
   Includes all changes of https://github.com/CSCsw/ColPack since version 1.0.10 up to commit 9a7293a (2019-06-21)
     e.g. shared memory parallel graph coloring (SMPGC) and reading METIS graphs
+  Based on the port of ColPack to OpenModelica by Felix Brandt and Linus Langenkamp
+    in https://github.com/OpenModelica/OMCompiler-3rdParty (#214, #219)
   Build system
     CMakeLists.txt moved to the project root. The automake build and the Travis CI configuration are removed.
     CMake 3.12 or newer is required
@@ -20,7 +22,7 @@
     Libraries are installed to lib/ and the CMake package files to lib/cmake/ColPack/
     The examples are no longer installed
   Sources
-    std::random_shuffle, removed in C++17, is replaced with std::shuffle
+    std::random_shuffle, removed in C++17, is replaced with std::shuffle (by Linus Langenkamp)
     The GCC builtin __sync_fetch_and_add is replaced with OpenMP critical and atomic constructs
     The alternative operator token 'and' is replaced with '&&'
     All C/C++ sources are formatted with clang-format, and the CMake files with gersemi
