@@ -11,8 +11,8 @@ set(COLPACK_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 # by downstream projects. The name of the lib directory is based on CMake's
 # GNUInstallDirs module.
 # The Basic examples are always built and are used as tests via CTest. The
-# non-Basic tests are built if ENABLE_EXAMPLES is ON. The only example that we
-# do not compile is SMB.
+# non-Basic tests are built if COLPACK_ENABLE_EXAMPLES is ON. The only example
+# that we do not compile is SMB.
 #
 # When using Visual Studio, we cannot use OpenMP or build the ColPack executable,
 # and we can only make use of the shared library if using CMake 3.4 or greater.
@@ -21,9 +21,9 @@ set(COLPACK_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 
 # User options.
 # -------------
-option(ENABLE_EXAMPLES
+option(COLPACK_ENABLE_EXAMPLES
     "Build the examples in SampleDrivers/Matrix_Compression_and_Recovery." OFF)
-    option(ENABLE_OPENMP "Enable OpenMP." ON)
+    option(COLPACK_ENABLE_OPENMP "Enable OpenMP." ON)
 set (CMAKE_CXX_STANDARD 11)
 
 # Configuring variables, etc.
@@ -62,7 +62,7 @@ if(WIN32)
         "Strategy for target intermediate directories (FULL or SHORT).")
 endif()
 
-if(ENABLE_OPENMP)
+if(COLPACK_ENABLE_OPENMP)
     find_package(OpenMP REQUIRED)
     if(MSVC)
         message(WARNING "ColPack requires a version of OpenMP greater than what Visual Studio provides.")
@@ -132,7 +132,7 @@ target_include_directories(ColPack_static INTERFACE
 # OpenMP::OpenMP_CXX carries the compile flags, the include directories and
 # the runtime library. Passing only OpenMP_CXX_FLAGS misses the latter two,
 # which breaks on macOS where Apple clang needs libomp from Homebrew.
-if(ENABLE_OPENMP)
+if(COLPACK_ENABLE_OPENMP)
     target_link_libraries(ColPack_static PUBLIC OpenMP::OpenMP_CXX)
 endif()
 
@@ -161,7 +161,7 @@ target_include_directories(ColPack_shared PRIVATE
 target_include_directories(ColPack_shared INTERFACE
     $<INSTALL_INTERFACE:${COLPACK_INSTALL_HEADERSDIR}>)
 
-if(ENABLE_OPENMP)
+if(COLPACK_ENABLE_OPENMP)
     target_link_libraries(ColPack_shared PUBLIC OpenMP::OpenMP_CXX)
 endif()
 
@@ -196,12 +196,13 @@ file(COPY "${COLPACK_ROOT_DIR}/Graphs" DESTINATION "${CMAKE_BINARY_DIR}")
 # Examples.
 # ---------
 enable_testing()
-# We build the Basic examples regardless of the setting for ENABLE_EXAMPLES.
+# We build the Basic examples regardless of the setting for
+# COLPACK_ENABLE_EXAMPLES.
 # First, gather up all the example files.
 file(GLOB SAMPLE_DRIVERS_BASIC RELATIVE "${COLPACK_ROOT_DIR}/Examples/SampleDrivers"
     ${COLPACK_ROOT_DIR}/Examples/SampleDrivers/Basic/*.cpp)
 set(EXAMPLES ${SAMPLE_DRIVERS_BASIC})
-if(ENABLE_EXAMPLES)
+if(COLPACK_ENABLE_EXAMPLES)
     file(GLOB SAMPLE_DRIVERS_MATRIX_COMPRESSION_AND_RECOVERY
         RELATIVE "${COLPACK_ROOT_DIR}/Examples/SampleDrivers"
         ${COLPACK_ROOT_DIR}/Examples/SampleDrivers/Matrix_Compression_and_Recovery/ADIC/*.cpp

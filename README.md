@@ -121,10 +121,10 @@ Install ColPack makes ColPack easy to use and it can also decreases the size of 
     cmake --install build      # install the libraries, headers and CMake package
 
 Use `cmake -LH build` or `ccmake build` to see a list of
-options, such as `ENABLE_EXAMPLES` and `ENABLE_OPENMP`, which you can set when
-configuring:
+options, such as `COLPACK_ENABLE_EXAMPLES` and `COLPACK_ENABLE_OPENMP`, which
+you can set when configuring:
 
-    cmake -S . -B build -DENABLE_EXAMPLES=ON
+    cmake -S . -B build -DCOLPACK_ENABLE_EXAMPLES=ON
 
 If not using`-DCMAKE_INSTALL_PREFIX:PATH`, the library files will be installed under `/usr/local/` by default which may requires privilege.
 

@@ -3,7 +3,7 @@
 @PACKAGE_INIT@
 
 include(CMakeFindDependencyMacro)
-if(@ENABLE_OPENMP@)
+if(@COLPACK_ENABLE_OPENMP@)
     find_dependency(OpenMP COMPONENTS CXX)
 endif()
 
