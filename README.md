@@ -169,6 +169,12 @@ ColPack installs a CMake package that provides the targets `ColPack::ColPack_sta
 
 Include the headers with `#include "ColPackHeaders.h"`.
 
+Code Formatting
+---------------
+The C and C++ sources are formatted with clang-format 23.1.1 using the style in `.clang-format`. CI checks the formatting of every pull request. To format all sources:
+
+    pipx run clang-format==23.1.1 -i $(git ls-files '*.c' '*.cpp' '*.h' '*.hpp')
+
 &nbsp;   
 &nbsp;   
 &nbsp;   

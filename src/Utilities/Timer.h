@@ -1,6 +1,6 @@
 /*******************************************************************************
     This file is part of ColPack, which is under its License protection.
-    You should have received a copy of the License. If not, see 
+    You should have received a copy of the License. If not, see
     <https://github.com/CSCsw/ColPack>
 *******************************************************************************/
 
@@ -20,24 +20,22 @@
 
 #endif
 
-
 #ifndef TIMER_H
 #define TIMER_H
 
 namespace ColPack
 {
-	/** @ingroup group4
-	 *  @brief class Timer in @link group4@endlink.
+/** @ingroup group4
+ *  @brief class Timer in @link group4@endlink.
 
-	 The timer class is the only class in ColPack which has an optional dependency on the operating
-	 system. It offers both system independent C++ timer based on ctime.h or linux/unix dependent timer based
-	 on sys/times.h. The sytem independent timer only gives wall clock time while linux/unix dependent timer
-	 gives wall, processor, user and system times.
-	 */
-	class Timer
-	{
-	  private:
-
+ The timer class is the only class in ColPack which has an optional dependency on the operating
+ system. It offers both system independent C++ timer based on ctime.h or linux/unix dependent timer based
+ on sys/times.h. The sytem independent timer only gives wall clock time while linux/unix dependent timer
+ gives wall, processor, user and system times.
+ */
+class Timer
+{
+private:
 /// UNIX only.  Used to measure longer execution time.
 /** Define SYSTEM_TIME to measure the execution time of a program which may run for more than 30 minutes
 (35.79 minutes or 2,147 seconds to be accurate)
@@ -47,39 +45,37 @@ Time in seconds = # of clock-ticks / CLOCKS_PER_SEC => max Time in seconds = 2,1
 */
 #ifdef SYSTEM_TIME
 
-		struct tms tms_BeginTimer;
-		struct tms tms_EndTimer;
+  struct tms tms_BeginTimer;
+  struct tms tms_EndTimer;
 #endif
 
-		clock_t ct_BeginTimer;
-		clock_t ct_EndTimer;
+  clock_t ct_BeginTimer;
+  clock_t ct_EndTimer;
 
+public:
+  // Public Constructor 4351
+  Timer();
 
-	  public:
+  // Public Destructor 4352
+  ~Timer();
 
-		//Public Constructor 4351
-		Timer();
+  // Public Function 4354
+  void Start();
 
-		//Public Destructor 4352
-		~Timer();
+  // Public Function 4355
+  void Stop();
 
-		//Public Function 4354
-		void Start();
+  // Public Function 4356
+  double GetWallTime();
 
-		//Public Function 4355
-		void Stop();
+  // Public Function 4357
+  double GetProcessorTime();
 
-		//Public Function 4356
-		double GetWallTime();
+  // Public Function 4358
+  double GetUserProcessorTime();
 
-		//Public Function 4357
-		double GetProcessorTime();
-
-		//Public Function 4358
-		double GetUserProcessorTime();
-
-		//Public Function 4359
-		double GetSystemProcessorTime();
-	};
-}
+  // Public Function 4359
+  double GetSystemProcessorTime();
+};
+} // namespace ColPack
 #endif

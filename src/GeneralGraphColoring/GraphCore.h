@@ -1,6 +1,6 @@
 /*******************************************************************************
     This file is part of ColPack, which is under its License protection.
-    You should have received a copy of the License. If not, see 
+    You should have received a copy of the License. If not, see
     <https://github.com/CSCsw/ColPack>
 *******************************************************************************/
 
@@ -10,91 +10,85 @@ using namespace std;
 #define GRAPHCORE_H
 namespace ColPack
 {
-	/** @ingroup group1
-	 *  @brief class GraphCore in @link group1@endlink.
+/** @ingroup group1
+ *  @brief class GraphCore in @link group1@endlink.
 
-	 Base class for Graph. Define a Graph: vertices, edges and values (edge's weight - optional); and its statisitcs: max, min and average degree.
-	 */
-	class GraphCore
-	{
-	public: //DOCUMENTED
+ Base class for Graph. Define a Graph: vertices, edges and values (edge's weight - optional); and its statisitcs: max, min and average degree.
+ */
+class GraphCore
+{
+public: // DOCUMENTED
+  /// Print all the Distance-1 neighbors of VertexIndex (0-based), except the excludedVertex
+  void PrintVertexD1Neighbor(int VertexIndex, int excludedVertex = -1);
+  void GetD1Neighbor(int VertexIndex, vector<int> &D1Neighbor, int excludedVertex = -1);
 
-		///Print all the Distance-1 neighbors of VertexIndex (0-based), except the excludedVertex
-		void PrintVertexD1Neighbor(int VertexIndex, int excludedVertex = -1);
-		void GetD1Neighbor(int VertexIndex, vector<int> &D1Neighbor, int excludedVertex = -1);
+  /// Print all the Distance-2 neighbors of VertexIndex
+  void PrintVertexD2Neighbor(int VertexIndex);
 
-		/// Print all the Distance-2 neighbors of VertexIndex
-		void PrintVertexD2Neighbor(int VertexIndex);
+  /// Check and see if VertexIndex1 and VertexIndex2 are Distance-2 neighbor
+  /** Algorithm:
+  - Get the set D1_of_VertexIndex1 of all the Distance-1 neighbors of VertexIndex1
+  - Get the set D1_of_VertexIndex2 of all the Distance-1 neighbors of VertexIndex2
+  - Intersect D1_of_VertexIndex1 and D1_of_VertexIndex2 to see which vertices VertexIndex1 and VertexIndex2 have in common. The result is stored in Intersect_set
+  - If the size of Intersect_set > 0 => VertexIndex1 and VertexIndex2 are Distance-2 neighbor
+  */
+  bool AreD2Neighbor(int VertexIndex1, int VertexIndex2);
 
-		/// Check and see if VertexIndex1 and VertexIndex2 are Distance-2 neighbor
-		/** Algorithm:
-		- Get the set D1_of_VertexIndex1 of all the Distance-1 neighbors of VertexIndex1
-		- Get the set D1_of_VertexIndex2 of all the Distance-1 neighbors of VertexIndex2
-		- Intersect D1_of_VertexIndex1 and D1_of_VertexIndex2 to see which vertices VertexIndex1 and VertexIndex2 have in common. The result is stored in Intersect_set
-		- If the size of Intersect_set > 0 => VertexIndex1 and VertexIndex2 are Distance-2 neighbor
-		*/
-		bool AreD2Neighbor(int VertexIndex1, int VertexIndex2);
+  bool operator==(const GraphCore &other) const;
+  bool areEqual(const GraphCore &other, bool structureOnly = 1) const;
 
-		bool operator==(const GraphCore &other) const;
-		bool areEqual(const GraphCore &other, bool structureOnly = 1) const;
+protected:
+  int m_i_MaximumVertexDegree;
+  int m_i_MinimumVertexDegree;
 
-	protected:
+  double m_d_AverageVertexDegree;
 
-		int m_i_MaximumVertexDegree;
-		int m_i_MinimumVertexDegree;
+  string m_s_InputFile;
 
-		double m_d_AverageVertexDegree;
+  vector<int> m_vi_Vertices;
 
-		string m_s_InputFile;
+  vector<int> m_vi_Edges;
 
-		vector<int> m_vi_Vertices;
+  vector<double> m_vd_Values; //!< Edge's weight
 
-		vector<int> m_vi_Edges;
+  /** m_mimi2_VertexEdgeMap is a matrix that has all the non-zero (edge) in the
+  upper triangle marked from 0 to (total number of non-zeros - 1)
+  Populated by GraphColoring::AcyclicColoring()
+  */
+  map<int, map<int, int>> m_mimi2_VertexEdgeMap; // moved from int GraphColoring::AcyclicColoring()
 
-		vector<double> m_vd_Values; //!< Edge's weight
+  /** m_ds_DisjointSets holds a set of bi-color trees
+  Populated by GraphColoring::AcyclicColoring()
+  */
+  DisjointSets m_ds_DisjointSets; // moved from int GraphColoring::AcyclicColoring()
+public:
+  virtual ~GraphCore() {}
 
-		/** m_mimi2_VertexEdgeMap is a matrix that has all the non-zero (edge) in the
-		upper triangle marked from 0 to (total number of non-zeros - 1)
-		Populated by GraphColoring::AcyclicColoring()
-		*/
-		map< int, map< int, int> > m_mimi2_VertexEdgeMap; //moved from int GraphColoring::AcyclicColoring()
+  virtual void Clear();
 
-		/** m_ds_DisjointSets holds a set of bi-color trees
-		Populated by GraphColoring::AcyclicColoring()
-		*/
-		DisjointSets m_ds_DisjointSets; //moved from int GraphColoring::AcyclicColoring()
-	public:
+  int GetVertexCount();
 
-		virtual ~GraphCore() {}
+  int GetEdgeCount();
 
-		virtual void Clear();
+  int GetMaximumVertexDegree();
 
-		int GetVertexCount();
+  int GetMinimumVertexDegree();
 
-		int GetEdgeCount();
+  double GetAverageVertexDegree();
 
-		int GetMaximumVertexDegree();
+  string GetInputFile();
 
-		int GetMinimumVertexDegree();
+  void GetVertices(vector<int> &output) const;
+  vector<int> *GetVerticesPtr() { return &m_vi_Vertices; }
 
-		double GetAverageVertexDegree();
+  void GetEdges(vector<int> &output) const;
+  vector<int> *GetEdgesPtr() { return &m_vi_Edges; }
 
-		string GetInputFile();
+  void GetValues(vector<double> &output) const;
 
-		void GetVertices(vector<int> &output) const;
-		vector <int>* GetVerticesPtr(){ return &m_vi_Vertices; }
+  void GetVertexEdgeMap(map<int, map<int, int>> &output);
 
-		void GetEdges(vector<int> &output) const;
-		vector <int>* GetEdgesPtr(){ return &m_vi_Edges; }
-
-		void GetValues(vector<double> &output) const;
-
-		void GetVertexEdgeMap(map< int, map< int, int> > &output);
-
-		void GetDisjointSets(DisjointSets &output);
-
-
-	};
-}
+  void GetDisjointSets(DisjointSets &output);
+};
+} // namespace ColPack
 #endif
-

@@ -1,6 +1,6 @@
 /*******************************************************************************
     This file is part of ColPack, which is under its License protection.
-    You should have received a copy of the License. If not, see 
+    You should have received a copy of the License. If not, see
     <https://github.com/CSCsw/ColPack>
 *******************************************************************************/
 
@@ -14,69 +14,65 @@ using namespace std;
 
 namespace ColPack
 {
-	/** @ingroup group21
-	 *  @brief class BipartiteGraphPartialOrdering in @link group21@endlink.
+/** @ingroup group21
+ *  @brief class BipartiteGraphPartialOrdering in @link group21@endlink.
 
-	 The BipartiteGraphPartialOrderingClass stores either the ordered row or column vertices as a
-	 vector of vertex identifiers to be used by bipartite graph partial coloring methods.
-	 */
-	class BipartiteGraphPartialOrdering : public BipartiteGraphInputOutput
-	{
-	public:
+ The BipartiteGraphPartialOrderingClass stores either the ordered row or column vertices as a
+ vector of vertex identifiers to be used by bipartite graph partial coloring methods.
+ */
+class BipartiteGraphPartialOrdering : public BipartiteGraphInputOutput
+{
+public:
+  int OrderVertices(string s_OrderingVariant = "NATURAL", string s_ColoringVariant = "COLUMN_PARTIAL_DISTANCE_TWO");
 
-		int OrderVertices(string s_OrderingVariant = "NATURAL", string s_ColoringVariant = "COLUMN_PARTIAL_DISTANCE_TWO");
+private:
+  int CheckVertexOrdering(string s_VertexOrderingVariant);
 
-	private:
+protected:
+  double m_d_OrderingTime;
 
-		int CheckVertexOrdering(string s_VertexOrderingVariant);
+  string m_s_VertexOrderingVariant;
 
-	protected:
+  vector<int> m_vi_OrderedVertices;
 
-		double m_d_OrderingTime;
+public:
+  BipartiteGraphPartialOrdering();
 
-		string m_s_VertexOrderingVariant;
+  ~BipartiteGraphPartialOrdering();
 
-		vector<int> m_vi_OrderedVertices;
+  virtual void Clear();
 
-	public:
+  virtual void Reset();
 
-		BipartiteGraphPartialOrdering();
+  int RowNaturalOrdering();
+  int ColumnNaturalOrdering();
 
-		~BipartiteGraphPartialOrdering();
+  int RowRandomOrdering();
+  int ColumnRandomOrdering();
 
-		virtual void Clear();
+  int RowLargestFirstOrdering();
+  int ColumnLargestFirstOrdering();
 
-		virtual void Reset();
+  int RowSmallestLastOrdering();
+  int RowSmallestLastOrdering_serial();
+  int RowSmallestLastOrdering_OMP();
+  int ColumnSmallestLastOrdering();
+  int ColumnSmallestLastOrdering_serial();
+  int ColumnSmallestLastOrdering_OMP();
 
-		int RowNaturalOrdering();
-		int ColumnNaturalOrdering();
+  int RowIncidenceDegreeOrdering();
+  int ColumnIncidenceDegreeOrdering();
 
-		int RowRandomOrdering();
-		int ColumnRandomOrdering();
+  int RowDynamicLargestFirstOrdering();
+  int ColumnDynamicLargestFirstOrdering();
 
-		int RowLargestFirstOrdering();
-		int ColumnLargestFirstOrdering();
+  string GetVertexOrderingVariant();
 
-		int RowSmallestLastOrdering();
-		int RowSmallestLastOrdering_serial();
-		int RowSmallestLastOrdering_OMP();
-		int ColumnSmallestLastOrdering();
-		int ColumnSmallestLastOrdering_serial();
-		int ColumnSmallestLastOrdering_OMP();
+  void GetOrderedVertices(vector<int> &output);
 
-		int RowIncidenceDegreeOrdering();
-		int ColumnIncidenceDegreeOrdering();
+  void PrintVertexOrdering();
 
-                int RowDynamicLargestFirstOrdering();
-                int ColumnDynamicLargestFirstOrdering();
-
-		string GetVertexOrderingVariant();
-
-		void GetOrderedVertices(vector<int> &output);
-
-		void PrintVertexOrdering();
-
-		double GetVertexOrderingTime();
-	};
-}
+  double GetVertexOrderingTime();
+};
+} // namespace ColPack
 #endif
