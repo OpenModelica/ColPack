@@ -91,7 +91,7 @@ if(COLPACK_ENABLE_OPENMP)
     if(MSVC AND NOT DEFINED OpenMP_RUNTIME_MSVC)
         set(OpenMP_RUNTIME_MSVC llvm)
     endif()
-    find_package(OpenMP REQUIRED)
+    find_package(OpenMP REQUIRED COMPONENTS CXX)
 endif()
 
 # Define variables to use for organizing the installation.
