@@ -1,5 +1,11 @@
 [![build](https://github.com/OpenModelica/ColPack/actions/workflows/build.yml/badge.svg)](https://github.com/OpenModelica/ColPack/actions/workflows/build.yml)
 
+> [!NOTE]
+> This is a fork of the original [ColPack](https://github.com/CSCsw/ColPack), which has not changed since 2019.
+> It is maintained mainly for use in [OpenModelica](https://github.com/OpenModelica/OpenModelica), but it is still a general-purpose library.
+> Changes should keep ColPack usable by any project and not tie it to OpenModelica.
+> See [ChangeLog](ChangeLog) for the changes since the original ColPack 1.0.10.
+
 ColPack's Doxygen documentation is available here:
 http://cscapes.cs.purdue.edu/coloringpage/software.htm
 

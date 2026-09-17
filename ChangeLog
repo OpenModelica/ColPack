@@ -1,3 +1,31 @@
+2026-09-17 Andreas Heuermann
+  Version 1.1.0
+  First release of the fork https://github.com/OpenModelica/ColPack
+  Includes all changes of https://github.com/CSCsw/ColPack since version 1.0.10 up to commit 9a7293a (2019-06-21)
+    e.g. shared memory parallel graph coloring (SMPGC) and reading METIS graphs
+  Build system
+    CMakeLists.txt moved to the project root. The automake build and the Travis CI configuration are removed.
+    CMake 3.12 or newer is required
+    Options are renamed: ENABLE_EXAMPLES is now COLPACK_ENABLE_EXAMPLES, ENABLE_OPENMP is now COLPACK_ENABLE_OPENMP
+    The recovery routines in src/Recovery are now compiled into the library
+    OpenMP is linked via OpenMP::OpenMP_CXX, which fixes the build on macOS with libomp from Homebrew
+    MSVC is supported. It builds with /openmp:llvm, because OpenMP 2.0 does not support unsigned loop indices.
+      This requires CMake 3.30 or newer.
+    Windows builds use short intermediate paths (CMAKE_INTERMEDIATE_DIR_STRATEGY=SHORT), because the object paths
+      of some examples exceed MAX_PATH. Building all examples on Windows requires CMake 4.2 or newer.
+  Installed CMake package
+    All headers are installed to include/ColPack, and the exported targets use this include directory.
+      Previously the Recovery headers were missing and the include directory was wrong.
+    Targets are exported as ColPack::ColPack_static and ColPack::ColPack_shared
+    Libraries are installed to lib/ and the CMake package files to lib/cmake/ColPack/
+    The examples are no longer installed
+  Sources
+    std::random_shuffle, removed in C++17, is replaced with std::shuffle
+    The GCC builtin __sync_fetch_and_add is replaced with OpenMP critical and atomic constructs
+    The alternative operator token 'and' is replaced with '&&'
+    All C/C++ sources are formatted with clang-format, and the CMake files with gersemi
+  CI
+    GitHub Actions build and test on Linux, Windows (MSYS2 UCRT64 and MSVC) and macOS, and check the C/C++ formatting
 2011-09-01 Duc Nguyen
   displayGraph() is updated to accept BipartiteGraphPartialColoringInterface &g
     At this point, displayGraph(BipartiteGraphPartialColoringInterface &g) cannot highlight coloring conflicts yet
