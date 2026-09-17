@@ -22,12 +22,14 @@ ColPack's project home page:
 
 1. [ColPack](#about-colpack)
 2. [Installation Guilds](#build-and-compile-colpack-instructions)
-   1. [Compile ColPack Without Install](#try-colpack-by-compile-and-run-without-installation)
-   2. [Ubuntu Install](#ubuntu-build-and-install-colpack-instructions)
-   3. [Windows Install](#windows-build-and-install-colpack-instructions)
-   4. [MacOS Install](#mac-os-build-and-install-colpack-instructions)
-   5. [Utilize the Installed Library](#after-the-build-use-colpack-as-installed-library)
-   6. [Code Formatting](#code-formatting)
+   1. [Prebuilt Packages](#prebuilt-packages)
+   2. [Compile ColPack Without Install](#try-colpack-by-compile-and-run-without-installation)
+   3. [Ubuntu Install](#ubuntu-build-and-install-colpack-instructions)
+   4. [Windows Install](#windows-build-and-install-colpack-instructions)
+   5. [MacOS Install](#mac-os-build-and-install-colpack-instructions)
+   6. [Utilize the Installed Library](#after-the-build-use-colpack-as-installed-library)
+   7. [Code Formatting](#code-formatting)
+   8. [Making a Release](#making-a-release)
 3. [Usages](#usage)
 4. [HowToCite](#the-best-source-for-citing-this-work)
 
@@ -149,6 +151,28 @@ will also collect the ColPack into a shared library which makes ColPack easy to
 cooperate with other applications. But it requires to pre-install **CMake**
 software.
 
+### Prebuilt Packages
+
+Each [release](https://github.com/OpenModelica/ColPack/releases) provides
+prebuilt packages, so ColPack can be used without building it:
+
+| Package | Platform |
+| --- | --- |
+| `colpack-<version>-linux-x86_64.tar.gz` | Linux x86_64, glibc 2.35+, GCC |
+| `colpack-<version>-linux-aarch64.tar.gz` | Linux AArch64, glibc 2.35+, GCC |
+| `colpack-<version>-macos-arm64.tar.gz` | macOS 15+ on Apple silicon |
+| `colpack-<version>-windows-msvc-x64.zip` | Windows x64, MSVC |
+| `colpack-<version>-windows-ucrt64-x64.zip` | Windows x64, MSYS2 UCRT64 |
+
+Each package contains the headers, the static and shared libraries built in
+Release mode and the CMake package. Extract it and
+[use it as installed library](#after-the-build-use-colpack-as-installed-library).
+ColPack needs an OpenMP runtime: libgomp on Linux and MSYS2, `libomp` from
+Homebrew on macOS and the LLVM OpenMP runtime (`libomp140.x86_64.dll`) of
+Visual Studio for MSVC. The MSVC libraries link the release C runtime (`/MD`),
+so use them in Release or RelWithDebInfo builds only.
+`SHA256SUMS` lists the checksums of all packages and of the source archive.
+
 ### Try ColPack by Compile and Run without Installation
 
 You can just try ColPack by download, compile and run it. This is the fastest
@@ -256,6 +280,21 @@ sources:
 ```sh
 pipx run clang-format==23.1.1 -i $(git ls-files '*.c' '*.cpp' '*.h' '*.hpp')
 ```
+
+### Making a Release
+
+1. Set the version in `project()` and `COLPACK_VERSION` in `CMakeLists.txt`.
+2. Add an entry for the version at the top of `ChangeLog`.
+3. After the changes are merged, tag the commit on `master` and push the tag:
+
+   ```sh
+   git tag -a v1.1.0 -m "ColPack 1.1.0"
+   git push origin v1.1.0
+   ```
+
+The [release workflow](.github/workflows/release.yml) then checks that the tag
+matches the version, builds and tests the packages and publishes them as a
+GitHub release.
 
 ## USAGE
 

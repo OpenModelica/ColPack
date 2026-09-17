@@ -1,0 +1,230 @@
+name: release
+
+# Pushing a tag vX.Y.Z builds the release packages and publishes them as a
+# GitHub release. Pull requests that touch the packaging build the packages
+# without publishing, they are available as workflow artifacts.
+on:
+  push:
+    tags: ["v*"]
+  pull_request:
+    paths:
+      - .github/workflows/release.yml
+      - .github/package-test/**
+      - CMakeLists.txt
+      - ColPackConfig.cmake.in
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  version:
+    name: Check version
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
+
+      - name: Get version from CMakeLists.txt
+        id: version
+        run: |
+          version=$(sed -n 's/^project(ColPack VERSION \([0-9.]*\).*/\1/p' CMakeLists.txt)
+          colpack_version=$(sed -n 's/^set(COLPACK_VERSION \([0-9.]*\))/\1/p' CMakeLists.txt)
+          if [ -z "$version" ] || [ "$version" != "$colpack_version" ]; then
+            echo "::error file=CMakeLists.txt::project() VERSION '$version' and COLPACK_VERSION '$colpack_version' differ"
+            exit 1
+          fi
+          if [ "$GITHUB_REF_TYPE" = tag ] && [ "$GITHUB_REF_NAME" != "v$version" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match version $version in CMakeLists.txt"
+            exit 1
+          fi
+          if ! awk 'NR>1 && /^[^ \t]/ {exit} {print}' ChangeLog | grep -q "^  Version $version\$"; then
+            echo "::error file=ChangeLog::The first ChangeLog entry is not for version $version"
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+  package:
+    name: Package ${{ matrix.name }}
+    needs: version
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: linux-x86_64
+            os: ubuntu-22.04
+            shell: bash
+            archive: tar.gz
+          - name: linux-aarch64
+            os: ubuntu-22.04-arm
+            shell: bash
+            archive: tar.gz
+          - name: macos-arm64
+            os: macos-15
+            shell: bash
+            archive: tar.gz
+            # Apple clang supports OpenMP but does not ship the runtime or <omp.h>.
+            cmake-args: -DOpenMP_ROOT=$(brew --prefix libomp)
+          - name: windows-msvc-x64
+            os: windows-2025
+            shell: bash
+            archive: zip
+          - name: windows-ucrt64-x64
+            os: windows-2025
+            shell: msys2 {0}
+            msystem: UCRT64
+            archive: zip
+            cmake-args: -G "MSYS Makefiles"
+
+    defaults:
+      run:
+        shell: ${{ matrix.shell }}
+
+    env:
+      PACKAGE: colpack-${{ needs.version.outputs.version }}-${{ matrix.name }}
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
+
+      - if: matrix.msystem
+        uses: msys2/setup-msys2@66cd2cce69caa17b53920067426061ca1de3a884 #v2.32.0
+        with:
+          msystem: ${{ matrix.msystem }}
+          update: true
+          install: >-
+            make
+          pacboy: >-
+            toolchain:p
+            cmake:p
+
+      - if: runner.os == 'macOS'
+        name: Install dependencies
+        run: brew install libomp
+
+      - name: Configure
+        run: cmake -S . -B build ${{ matrix.cmake-args }} -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build --config Release --parallel
+
+      - name: Test
+        run: ctest --test-dir build -C Release --output-on-failure
+
+      - name: Install
+        run: |
+          # pwd -W gives a Windows path that native Windows programs understand.
+          prefix="$(pwd -W 2>/dev/null || pwd)/$PACKAGE"
+          cmake --install build --config Release --prefix "$prefix"
+          cp AUTHORS ChangeLog LICENSE README.md "$PACKAGE/"
+
+      - name: Test package
+        run: |
+          prefix="$(pwd -W 2>/dev/null || pwd)/$PACKAGE"
+          cmake -S .github/package-test -B build-package-test ${{ matrix.cmake-args }} \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_PREFIX_PATH="$prefix" \
+            -DCOLPACK_EXPECTED_VERSION=${{ needs.version.outputs.version }}
+          cmake --build build-package-test --config Release --parallel
+          # Windows finds the shared library ColPack.dll via PATH.
+          PATH="$PWD/$PACKAGE/bin:$PATH" \
+            ctest --test-dir build-package-test -C Release --output-on-failure
+
+      - name: Create archive
+        run: |
+          if [ "${{ matrix.archive }}" = zip ]; then
+            cmake -E tar cf "$PACKAGE.zip" --format=zip "$PACKAGE"
+          else
+            cmake -E tar czf "$PACKAGE.tar.gz" "$PACKAGE"
+          fi
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a #v7.0.1
+        with:
+          name: package-${{ matrix.name }}
+          path: ${{ env.PACKAGE }}.${{ matrix.archive }}
+          if-no-files-found: error
+
+  source:
+    name: Source archive
+    needs: version
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
+
+      # Unlike GitHub's generated source archives, this one has a stable checksum.
+      - name: Create archive
+        run: |
+          name=colpack-${{ needs.version.outputs.version }}
+          git archive --format=tar.gz --prefix="$name/" -o "$name-source.tar.gz" HEAD
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a #v7.0.1
+        with:
+          name: package-source
+          path: colpack-*-source.tar.gz
+          if-no-files-found: error
+
+  release:
+    name: Publish release
+    if: github.ref_type == 'tag'
+    needs: [version, package, source]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
+
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c #v8.0.1
+        with:
+          pattern: package-*
+          path: dist
+          merge-multiple: true
+
+      - name: Create checksums
+        working-directory: dist
+        run: sha256sum colpack-* | tee SHA256SUMS
+
+      - name: Write release notes
+        env:
+          VERSION: ${{ needs.version.outputs.version }}
+        run: |
+          {
+            echo "Prebuilt packages of ColPack $VERSION. Each package contains the headers, the"
+            echo "static and shared libraries (Release) and the CMake package; see"
+            echo "[README.md]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/blob/$GITHUB_REF_NAME/README.md#prebuilt-packages)."
+            echo "Using ColPack requires an OpenMP runtime: libgomp on Linux and MSYS2,"
+            echo "libomp from Homebrew on macOS and the LLVM OpenMP runtime of Visual Studio for MSVC."
+            echo
+            echo "## Changes"
+            echo
+            echo '```text'
+            awk 'NR>1 && /^[^ \t]/ {exit} {print}' ChangeLog
+            echo '```'
+          } > notes.md
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.version.outputs.version }}
+        run: |
+          if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
+            # Re-running the workflow replaces the assets of the existing release.
+            gh release upload "$GITHUB_REF_NAME" dist/* --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" dist/* \
+              --verify-tag \
+              --title "ColPack $VERSION" \
+              --notes-file notes.md
+          fi
