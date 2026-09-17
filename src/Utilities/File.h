@@ -1,74 +1,70 @@
 /*******************************************************************************
     This file is part of ColPack, which is under its License protection.
-    You should have received a copy of the License. If not, see 
+    You should have received a copy of the License. If not, see
     <https://github.com/CSCsw/ColPack>
 *******************************************************************************/
 
 #ifndef FILE_H
 #define FILE_H
 
-#include<string>
+#include <string>
 
 using namespace std;
 
-//#undef _WIN32
+// #undef _WIN32
 
-//define system-dependent directory separator
-#ifdef _WIN32	//Windows
+// define system-dependent directory separator
+#ifdef _WIN32 // Windows
 #define DIR_SEPARATOR "\\"
-#else			//*nix
+#else //*nix
 #define DIR_SEPARATOR "/"
 #endif
 
-
 namespace ColPack
 {
-	/** @ingroup group4
-	 *  @brief class File in @link group4@endlink.
+/** @ingroup group4
+ *  @brief class File in @link group4@endlink.
 
-	 The File class is used to process file name. It should work on both Windows and *nix. A File object will
-	 take a file name, parse and separate it into 3 parts: path (name prefix), name, and file extension.
-	 */
-	class File
-	{
-	  private:
+ The File class is used to process file name. It should work on both Windows and *nix. A File object will
+ take a file name, parse and separate it into 3 parts: path (name prefix), name, and file extension.
+ */
+class File
+{
+private:
+  string path; // including the last DIR_SEPARATOR
+  string name;
+  string fileExtension; // excluding the '.'
 
-		string path; //including the last DIR_SEPARATOR
-		string name;
-		string fileExtension; //excluding the '.'
+public:
+  File();
 
-	  public:
+  File(string fileName);
 
-		File();
+  void Parse(string newFileName);
 
-		File(string fileName);
+  string GetPath() const;
 
-		void Parse(string newFileName);
+  string GetName() const;
 
-		string GetPath() const;
+  /// GetFileExtension excluding the '.'
+  string GetFileExtension() const;
 
-		string GetName() const;
+  string GetFullName() const;
 
-		///GetFileExtension excluding the '.'
-		string GetFileExtension() const;
+  void SetPath(string newPath);
 
-		string GetFullName() const;
+  void SetName(string newName);
 
-		void SetPath(string newPath);
+  void SetFileExtension(string newFileExtension);
+};
 
-		void SetName(string newName);
+/// Tell whether or not the file format is MatrixMarket from its extension
+bool isMatrixMarketFormat(string s_fileExtension);
 
-		void SetFileExtension(string newFileExtension);
+/// Tell whether or not the file format is HarwellBoeing from its extension
+bool isHarwellBoeingFormat(string s_fileExtension);
 
-	};
-
-	///Tell whether or not the file format is MatrixMarket from its extension
-	bool isMatrixMarketFormat(string s_fileExtension);
-
-	///Tell whether or not the file format is HarwellBoeing from its extension
-	bool isHarwellBoeingFormat(string s_fileExtension);
-
-	///Tell whether or not the file format is MeTiS from its extension
-	bool isMeTiSFormat(string s_fileExtension);
-}
+/// Tell whether or not the file format is MeTiS from its extension
+bool isMeTiSFormat(string s_fileExtension);
+} // namespace ColPack
 #endif
