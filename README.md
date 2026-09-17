@@ -13,10 +13,10 @@
 > See [ChangeLog](ChangeLog) for the changes since the original ColPack 1.0.10.
 
 ColPack's Doxygen documentation is available here:
-<http://cscapes.cs.purdue.edu/coloringpage/software.htm>
+<https://cscapes.cs.purdue.edu/coloringpage/software.htm>
 
 ColPack's project home page:
-<http://cscapes.cs.purdue.edu/coloringpage/>
+<https://cscapes.cs.purdue.edu/coloringpage/>
 
 ## Table of Contents
 
@@ -71,7 +71,7 @@ complexity expression corresponds to that of the fastest algorithm. In the
 complexity expressions,
 
 *the complexity of the corresponding algorithm can be found here
-[ColPack's project](http://cscapes.cs.purdue.edu/coloringpage/software.htm)*
+[ColPack's project](https://cscapes.cs.purdue.edu/coloringpage/software.htm)*
 
 ### Ordering techniques
 
@@ -137,7 +137,7 @@ Standard Template Library (STL). It is designed to be simple, modular,
 extensible and efficient. Figure 1 below gives an overview of the structure of
 the major classes of ColPack.
 
-![ColPack Organization](http://cscapes.cs.purdue.edu/coloringpage/software_files/ColPack_structure_2.png)
+![ColPack Organization](https://cscapes.cs.purdue.edu/coloringpage/software_files/ColPack_structure_2.png)
 
 ## Build and Compile ColPack Instructions
 
@@ -398,5 +398,5 @@ Graph of Market Market type: [matrix coordinate real symmetric]
 
 Assefaw H. Gebremedhin, Duc Nguyen, Mostofa Ali Patwary, and Alex Pothen,
 *[ColPack: Graph coloring software for derivative computation and
-beyond](http://dl.acm.org/citation.cfm?id=2513110&CFID=492318621&CFTOKEN=12698034)*,
+beyond](https://doi.org/10.1145/2513109.2513110)*,
 ACM Transactions on Mathematical Software, 40 (1), 30 pp., 2013.
