@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.12)
-project(ColPack)
+project(ColPack VERSION 1.1.0 LANGUAGES CXX)
 
 # Set the version number to the *next* release (not to the prevoius release).
-set(COLPACK_VERSION 1.0.11)
+set(COLPACK_VERSION 1.1.0)
 set(COLPACK_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 # CMake support was added by chrisdembia in 2017 to support building ColPack on
 # Windows with Visual Studio and to supplement autotools. The autotools build
