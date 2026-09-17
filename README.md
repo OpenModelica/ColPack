@@ -44,7 +44,7 @@ Vertex graph coloring problem is nothing but a way of labelling graph vertices
 under the constraints that no two adjacent vertices has the same lable (color).
 Here it is an example from wikipedia.
 
-![ExampleFromWiki](https://en.wikipedia.org/wiki/File:Petersen_graph_3-coloring.svg)
+[![3-coloring of the Petersen graph](https://upload.wikimedia.org/wikipedia/commons/9/90/Petersen_graph_3-coloring.svg)](https://commons.wikimedia.org/wiki/File:Petersen_graph_3-coloring.svg)
 
 ### ColPack Coloring capabilities
 
