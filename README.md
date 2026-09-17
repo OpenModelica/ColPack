@@ -278,15 +278,16 @@ submodule. The targets `ColPack_static` and `ColPack_shared` then carry the
 include directories of the source tree:
 
 ```cmake
+set(COLPACK_ENABLE_TESTS OFF CACHE BOOL "" FORCE)
 set(COLPACK_BUILD_SHARED OFF CACHE BOOL "" FORCE)
 add_subdirectory(ColPack)
 target_link_libraries(myapp PRIVATE ColPack_static)
 ```
 
-When ColPack is a subdirectory, `COLPACK_ENABLE_TESTS` defaults to `OFF`, so the
-ColPack executable and the Basic examples are not built and no tests are added
-to the parent project. `COLPACK_BUILD_SHARED` (default `ON`) controls whether
-the shared library is built and installed.
+`COLPACK_ENABLE_TESTS` (default `ON`) builds the ColPack executable and the
+Basic examples and adds them as tests. Turn it off to keep them out of the parent
+project. `COLPACK_BUILD_SHARED` (default `ON`) controls whether the shared
+library is built and installed.
 
 ### Code Formatting
 

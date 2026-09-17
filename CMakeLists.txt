@@ -11,25 +11,19 @@ set(COLPACK_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 # by downstream projects. The name of the lib directory is based on CMake's
 # GNUInstallDirs module.
 # The Basic examples are built and used as tests via CTest if
-# COLPACK_ENABLE_TESTS is ON, which is the default unless ColPack is added to
-# another project with add_subdirectory(). The non-Basic examples are built if
-# COLPACK_ENABLE_EXAMPLES is ON. The only example that we do not compile is SMB.
+# COLPACK_ENABLE_TESTS is ON.
+# The non-Basic examples are built if COLPACK_ENABLE_EXAMPLES is ON.
+# The only example that we do not compile is SMB.
 #
 # On Windows the examples are linked to the static library rather than to the
 # shared library.
-
-if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
-    set(COLPACK_IS_TOP_LEVEL ON)
-else()
-    set(COLPACK_IS_TOP_LEVEL OFF)
-endif()
 
 # User options.
 # -------------
 option(
     COLPACK_ENABLE_TESTS
     "Build the ColPack executable and the Basic examples and run them as tests."
-    ${COLPACK_IS_TOP_LEVEL}
+    ON
 )
 option(COLPACK_BUILD_SHARED "Build the shared library ColPack_shared." ON)
 option(
