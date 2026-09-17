@@ -1,5 +1,5 @@
-# Provides the imported targets ColPack::ColPack_static and
-# ColPack::ColPack_shared.
+# Provides the imported targets ColPack::ColPack_static and, if ColPack was built
+# with COLPACK_BUILD_SHARED, ColPack::ColPack_shared.
 @PACKAGE_INIT@
 
 include(CMakeFindDependencyMacro)

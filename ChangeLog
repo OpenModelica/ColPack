@@ -15,10 +15,15 @@
       This requires CMake 3.30 or newer.
     Windows builds use short intermediate paths (CMAKE_INTERMEDIATE_DIR_STRATEGY=SHORT), because the object paths
       of some examples exceed MAX_PATH. Building all examples on Windows requires CMake 4.2 or newer.
+    ColPack can be used with add_subdirectory(): the library targets carry the include directories of the source tree,
+      and all generated files are written to the current binary directory instead of the top-level one
+    New option COLPACK_ENABLE_TESTS (default ON) builds the ColPack executable and the Basic examples and adds them as tests
+    New option COLPACK_BUILD_SHARED (default ON) to skip building the shared library.
+      Without the shared library the static library is named ColPack on Windows, too
   Installed CMake package
     All headers are installed to include/ColPack, and the exported targets use this include directory.
       Previously the Recovery headers were missing and the include directory was wrong.
-    Targets are exported as ColPack::ColPack_static and ColPack::ColPack_shared
+    Targets are exported as ColPack::ColPack_static and ColPack::ColPack_shared (if COLPACK_BUILD_SHARED is ON)
     Libraries are installed to lib/ and the CMake package files to lib/cmake/ColPack/
     The examples are no longer installed
   Sources

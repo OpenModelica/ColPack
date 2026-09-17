@@ -271,6 +271,24 @@ target_link_libraries(myapp PRIVATE ColPack::ColPack_static)
 
 Include the headers with `#include "ColPackHeaders.h"`.
 
+### Use ColPack as a Subdirectory
+
+ColPack can also be added to another CMake project, for example as a git
+submodule. The targets `ColPack_static` and `ColPack_shared` then carry the
+include directories of the source tree:
+
+```cmake
+set(COLPACK_ENABLE_TESTS OFF CACHE BOOL "" FORCE)
+set(COLPACK_BUILD_SHARED OFF CACHE BOOL "" FORCE)
+add_subdirectory(ColPack)
+target_link_libraries(myapp PRIVATE ColPack_static)
+```
+
+`COLPACK_ENABLE_TESTS` (default `ON`) builds the ColPack executable and the
+Basic examples and adds them as tests. Turn it off to keep them out of the parent
+project. `COLPACK_BUILD_SHARED` (default `ON`) controls whether the shared
+library is built and installed.
+
 ### Code Formatting
 
 The C and C++ sources are formatted with clang-format 23.1.1 using the style in
