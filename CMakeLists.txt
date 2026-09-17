@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
-project(ColPack)
+project(ColPack VERSION 1.1.0 LANGUAGES CXX)
 
 # Set the version number to the *next* release (not to the prevoius release).
 set(COLPACK_VERSION 1.1.0)

@@ -52,9 +52,9 @@
     BipartiteGraphPartialColoringInterface() now accepts input from ADIC (int i_type=SRC_MEM_ADIC)
       BipartiteGraphPartialColoringInterface(int i_type, std::list<std::set<int> >*  valsetlist, int rowCount)
       a bipartite graph can be built by calling:
-	BipartiteGraphPartialColoringInterface *g = new BipartiteGraphPartialColoringInterface(SRC_MEM_ADIC, &valsetlist, rowCount);
+  BipartiteGraphPartialColoringInterface *g = new BipartiteGraphPartialColoringInterface(SRC_MEM_ADIC, &valsetlist, rowCount);
     add int JacobianRecovery1D::RecoverD2Cln_ADICFormat(
-							BipartiteGraphPartialColoringInterface* g,
-							double** dp2_CompressedMatrix,
-							std::list<std::set<int> >& lsi_SparsityPattern,
-							std::list<std::vector<double> > &lvd_NewValue)
+              BipartiteGraphPartialColoringInterface* g,
+              double** dp2_CompressedMatrix,
+              std::list<std::set<int> >& lsi_SparsityPattern,
+              std::list<std::vector<double> > &lvd_NewValue)
