@@ -10,9 +10,9 @@ set(COLPACK_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 # We install CMake config files (ColPackConfig.cmake) to support use of ColPack
 # by downstream projects. The name of the lib directory is based on CMake's
 # GNUInstallDirs module.
-# The Basic examples are always built and installed, and are used as tests
-# via CTest. The non-Basic tests are built and installed if ENABLE_EXAMPLES is
-# ON. The only example that we do not compile is SMB.
+# The Basic examples are always built and are used as tests via CTest. The
+# non-Basic tests are built if ENABLE_EXAMPLES is ON. The only example that we
+# do not compile is SMB.
 #
 # When using Visual Studio, we cannot use OpenMP or build the ColPack executable,
 # and we can only make use of the shared library if using CMake 3.4 or greater.
@@ -72,15 +72,8 @@ endif()
 # Define variables to use for organizing the installation.
 include(GNUInstallDirs) 
 
-if(WIN32)
-    set(COLPACK_INSTALL_CMAKEDIR       ColPack_libs)
-    set(COLPACK_INSTALL_EXAMPLESBINDIR ColPack_examples)
-else()
-    set(COLPACK_INSTALL_CMAKEDIR       ${CMAKE_INSTALL_LIBDIR}/ColPack_libs)
-    # To follow the UNIX Filsystem Hierarchy Standard, we should install
-    # examples somewhere else:
-    set(COLPACK_INSTALL_EXAMPLESBINDIR ${CMAKE_INSTALL_LIBDIR}/ColPack_examples)
-endif()
+set(COLPACK_INSTALL_CMAKEDIR ${CMAKE_INSTALL_LIBDIR}/cmake/ColPack)
+set(COLPACK_INSTALL_HEADERSDIR ${CMAKE_INSTALL_INCLUDEDIR}/ColPack)
 
 # Lists of the source files.
 # -------------------------
@@ -91,7 +84,7 @@ file(GLOB HEADERS
     ${COLPACK_ROOT_DIR}/src/BipartiteGraphBicoloring/*.h
     ${COLPACK_ROOT_DIR}/src/BipartiteGraphPartialColoring/*.h
     ${COLPACK_ROOT_DIR}/src/GeneralGraphColoring/*.h
-    ${COLPACK_ROOT_DIR}/src/Recovery/*.cpp
+    ${COLPACK_ROOT_DIR}/src/Recovery/*.h
     ${COLPACK_ROOT_DIR}/src/SMPGC/*.h)
     #${COLPACK_ROOT_DIR}/src/PartialD2SMPGC/*.h)
 file(GLOB SOURCES
@@ -133,7 +126,7 @@ target_include_directories(ColPack_static PRIVATE
 #    "$<BUILD_INTERFACE:${COLPACK_SOURCE_INCLUDE_DIRS}>")
 # For clients of an installation of ColPack.
 target_include_directories(ColPack_static INTERFACE
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+    $<INSTALL_INTERFACE:${COLPACK_INSTALL_HEADERSDIR}>)
 
 # The SMPGC headers include <omp.h> unconditionally, so OpenMP is PUBLIC:
 # OpenMP::OpenMP_CXX carries the compile flags, the include directories and
@@ -146,9 +139,9 @@ endif()
 # "EXPORT" helps with creating a ColPackConfig.cmake file to place in the
 # installation, to help downstream projects use ColPack.
 install(TARGETS ColPack_static EXPORT ColPackTargets
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/archive
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/library
-        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}/runtime)
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 
 # Shared library.
@@ -166,18 +159,18 @@ target_include_directories(ColPack_shared PRIVATE
 #    "$<BUILD_INTERFACE:${COLPACK_SOURCE_INCLUDE_DIRS}>")
 # For clients of an installation of ColPack.
 target_include_directories(ColPack_shared INTERFACE
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+    $<INSTALL_INTERFACE:${COLPACK_INSTALL_HEADERSDIR}>)
 
 if(ENABLE_OPENMP)
     target_link_libraries(ColPack_shared PUBLIC OpenMP::OpenMP_CXX)
 endif()
 
-install(FILES ${HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/ColPack_headers)
+install(FILES ${HEADERS} DESTINATION ${COLPACK_INSTALL_HEADERSDIR})
 
 install(TARGETS ColPack_shared EXPORT ColPackTargets
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/shared_archive
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/shared_library
-        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}/shared_runtime)
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 
 
@@ -203,8 +196,7 @@ file(COPY "${COLPACK_ROOT_DIR}/Graphs" DESTINATION "${CMAKE_BINARY_DIR}")
 # Examples.
 # ---------
 enable_testing()
-# We build and install the Basic examples regardless of the setting for
-# ENABLE_EXAMPLES.
+# We build the Basic examples regardless of the setting for ENABLE_EXAMPLES.
 # First, gather up all the example files.
 file(GLOB SAMPLE_DRIVERS_BASIC RELATIVE "${COLPACK_ROOT_DIR}/Examples/SampleDrivers"
     ${COLPACK_ROOT_DIR}/Examples/SampleDrivers/Basic/*.cpp)
@@ -230,10 +222,6 @@ foreach(example_cpp ${EXAMPLES})
     add_executable(${example} ${COLPACK_ROOT_DIR}/Examples/SampleDrivers/${example_cpp})
     target_link_libraries(${example} ${ColPack_lib_to_use})
     target_include_directories(${example} PRIVATE ${COLPACK_SOURCE_INCLUDE_DIRS})
-    # Install the examples in CSR_input into a dir. named CSR.
-    string(REPLACE "CSR_input" "CSR" example_rel_dir ${example_rel_dir})
-    install(TARGETS ${example} DESTINATION
-        ${COLPACK_INSTALL_EXAMPLESBINDIR}/${example_rel_dir})
     # Allow running the basic examples as tests.
     if(${example_rel_dir} STREQUAL Basic)
         # The examples read their input from ./Graphs, which is copied
@@ -250,7 +238,9 @@ endforeach()
 
 # Create files that define the ColPack targets to import into other projects.
 # https://cmake.org/cmake/help/v3.1/manual/cmake-packages.7.html
-install(EXPORT ColPackTargets DESTINATION ${COLPACK_INSTALL_CMAKEDIR})
+install(EXPORT ColPackTargets
+    NAMESPACE ColPack::
+    DESTINATION ${COLPACK_INSTALL_CMAKEDIR})
 
 # CMake Config file., and version file, which CMake will look for when
 # downstream projects use find_package(ColPack).
@@ -262,11 +252,9 @@ write_basic_package_version_file(
     VERSION ${COLPACK_VERSION}
     COMPATIBILITY AnyNewerVersion)
 configure_package_config_file(ColPackConfig.cmake.in
-    "${CMAKE_BINARY_DIR}/ColPackConfigToInstall.cmake"
-    INSTALL_DESTINATION ${COLPACK_INSTALL_CMAKEDIR}
-    PATH_VARS CMAKE_INSTALL_PREFIX)
-install(FILES "${CMAKE_BINARY_DIR}/ColPackConfigToInstall.cmake"
-    DESTINATION ${COLPACK_INSTALL_CMAKEDIR}
-    RENAME ColPackConfig.cmake)
-install(FILES "${CMAKE_BINARY_DIR}/ColPackConfigVersion.cmake"
+    "${CMAKE_BINARY_DIR}/ColPackConfig.cmake"
+    INSTALL_DESTINATION ${COLPACK_INSTALL_CMAKEDIR})
+install(FILES
+    "${CMAKE_BINARY_DIR}/ColPackConfig.cmake"
+    "${CMAKE_BINARY_DIR}/ColPackConfigVersion.cmake"
     DESTINATION ${COLPACK_INSTALL_CMAKEDIR})

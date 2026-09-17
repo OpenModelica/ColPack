@@ -118,7 +118,7 @@ Install ColPack makes ColPack easy to use and it can also decreases the size of 
     cmake -S . -B build -DCMAKE_INSTALL_PREFIX:PATH=${fullpath}
     cmake --build build -j 4   # Where "4" is the number of cores on your machine
     ctest --test-dir build     # run the Basic examples as tests
-    cmake --install build      # install the libraries and headers
+    cmake --install build      # install the libraries, headers and CMake package
 
 Use `cmake -LH build` or `ccmake build` to see a list of
 options, such as `ENABLE_EXAMPLES` and `ENABLE_OPENMP`, which you can set when
@@ -168,15 +168,12 @@ Another recommend altinative way is to install an Ubuntu system on your MAC with
     
 After the Build, Use ColPack as Installed Library
 -------------------------------------------------
-After the build, we have already generate an shared library under the `$fullpath` directory, and an executable file 'ColPack' under the colpack root directory. And you can use it.
-However if you want to write your own code and use ColPack as an shared library. Then follow the following ways:
-* export library's path to `LD_LIBRARY_PATH`
-* create your own code. 
-* include the relative ColPack header files within your code. `#include "ColPackHeaders.h"`
-* added `-ldl path/to/installed/library` and `-I /path/to/installed/include` to the compiler
-* compile the code
+ColPack installs a CMake package that provides the targets `ColPack::ColPack_static` and `ColPack::ColPack_shared`, which carry the include directories and OpenMP flags. Set `CMAKE_PREFIX_PATH` to the install prefix and use:
 
-We provide a template codes in `Example_Use_Library`
+    find_package(ColPack REQUIRED)
+    target_link_libraries(myapp PRIVATE ColPack::ColPack_static)
+
+Include the headers with `#include "ColPackHeaders.h"`.
 
 &nbsp;   
 &nbsp;   
