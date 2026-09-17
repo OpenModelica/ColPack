@@ -130,15 +130,9 @@ If not using`-DCMAKE_INSTALL_PREFIX:PATH`, the library files will be installed u
 
 Windows Build and Install ColPack Instruction
 -------------------------------------------------------
-You can build ColPack's static library on Windows using Visual Studio 
-(tested with Visual Studio 2015) and CMake. Note, however, that you are not
-able to use OpenMP (Visual Studio supports only OpenMP 2.0), and cannot
-compile the ColPack executable (it depends on the POSIX getopt.h).
-
-If you are using CMake 3.4 or greater, you can build and use ColPack's
-shared library. If you have an older CMake, we still build the shared
-library, but you will not be able to use it because none of the symbols will
-be exported (Visual Studio will not generate a .lib file).
+ColPack can be built with Visual Studio 2019 16.9 or newer and CMake 3.30 or
+newer. OpenMP is enabled with `/openmp:llvm`, because Visual Studio's default
+OpenMP 2.0 is not sufficient. ColPack can also be built with MSYS2 and GCC.
 
 On Windows, the examples link to the static library instead of the shared
 library.

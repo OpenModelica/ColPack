@@ -14,10 +14,8 @@ set(COLPACK_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 # non-Basic tests are built if COLPACK_ENABLE_EXAMPLES is ON. The only example
 # that we do not compile is SMB.
 #
-# When using Visual Studio, we cannot use OpenMP or build the ColPack executable,
-# and we can only make use of the shared library if using CMake 3.4 or greater.
-# Also, the examples are linked to the static library rather than to the shared
-# library.
+# On Windows the examples are linked to the static library rather than to the
+# shared library.
 
 # User options.
 # -------------
@@ -78,13 +76,11 @@ if(WIN32)
 endif()
 
 if(COLPACK_ENABLE_OPENMP)
-    find_package(OpenMP REQUIRED)
-    if(MSVC)
-        message(
-            WARNING
-            "ColPack requires a version of OpenMP greater than what Visual Studio provides."
-        )
+    # MSVC's default OpenMP 2.0 lacks unsigned loop indices. Requires CMake 3.30.
+    if(MSVC AND NOT DEFINED OpenMP_RUNTIME_MSVC)
+        set(OpenMP_RUNTIME_MSVC llvm)
     endif()
+    find_package(OpenMP REQUIRED)
 endif()
 
 # Define variables to use for organizing the installation.

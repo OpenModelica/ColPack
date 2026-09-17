@@ -1352,7 +1352,7 @@ namespace ColPack
                 entry_encounter++;
                 iss>>r>>c;
                 if( r <= c ){
-                    if(b_symmetric and r!=c ) {
+                    if(b_symmetric && r!=c ) {
                         printf("Error! ReadMMGeneralGraphIntoPothenBipartiteGraphCpp11() find an and entry in upper triangular matrix \"%s\"\nRow,Col=%d,%d\n", s_InputFile.c_str(), r, c);
                         exit(1);
                     }

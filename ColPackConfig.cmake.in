@@ -4,6 +4,9 @@
 
 include(CMakeFindDependencyMacro)
 if(@COLPACK_ENABLE_OPENMP@)
+    if(MSVC AND NOT DEFINED OpenMP_RUNTIME_MSVC)
+        set(OpenMP_RUNTIME_MSVC llvm)
+    endif()
     find_dependency(OpenMP COMPONENTS CXX)
 endif()
 

@@ -85,6 +85,28 @@ jobs:
       - name: Test
         run: ctest --test-dir build --output-on-failure
 
+  msvc:
+    name: Windows MSVC (${{ matrix.build-type }})
+    runs-on: windows-latest
+    timeout-minutes: 30
+
+    strategy:
+      fail-fast: false
+      matrix:
+        build-type: [Release]
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
+
+      - name: Configure
+        run: cmake -S . -B build -DCOLPACK_ENABLE_EXAMPLES=ON
+
+      - name: Build
+        run: cmake --build build --config ${{ matrix.build-type }} --parallel
+
+      - name: Test
+        run: ctest --test-dir build -C ${{ matrix.build-type }} --output-on-failure
+
   macos:
     name: macOS (${{ matrix.build-type }})
     runs-on: macos-latest

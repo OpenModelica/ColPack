@@ -6165,7 +6165,9 @@ int GraphColoring::D1_Coloring_OMP(){
                 if ( vtxColor[v] == vtxColor[verInd[k]] ) {
                     if ( (randValues[v] < randValues[verInd[k]]) || 
                             ((randValues[v] == randValues[verInd[k]])&&(v < verInd[k])) ) {
-                        long whereInQ = __sync_fetch_and_add(&QtmpTail, 1);
+                        long whereInQ;
+                        #pragma omp critical
+                        whereInQ = QtmpTail++;
                         Qtmp[whereInQ] = v;//Add to the queue
                         vtxColor[v] = -1;  //Will prevent v from being in conflict in another pairing
                         break;
@@ -6223,7 +6225,8 @@ int GraphColoring::D1_Coloring_OMP(){
             if ( v == verInd[k] ) //Self-loops
                 continue;
             if ( vtxColor[v] == vtxColor[verInd[k]] ) {
-                __sync_fetch_and_add(&myConflicts, 1); //increment the counter
+                #pragma omp atomic
+                myConflicts++;
             }
         }//End of inner for loop: w in adj(v)
     }//End of outer for loop: for each vertex
