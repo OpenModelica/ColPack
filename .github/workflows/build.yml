@@ -43,6 +43,33 @@ jobs:
       - name: Test
         run: ctest --test-dir build --output-on-failure
 
+  subdirectory:
+    name: Linux (add_subdirectory)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential \
+            cmake
+
+      - name: Configure
+        run: cmake -S test/subdirectory -B build -G "Unix Makefiles"
+
+      - name: Build
+        run: cmake --build build -j$(nproc)
+
+      # Only the test of the parent project, none of ColPack's own tests.
+      - name: Test
+        run: |
+          ctest --test-dir build --output-on-failure
+          test "$(ctest --test-dir build -N | sed -n 's/^Total Tests: //p')" = 1
+
   windows:
     name: Windows UCRT64 (${{ matrix.build-type }})
     runs-on: windows-latest

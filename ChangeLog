@@ -34,6 +34,7 @@
     All C/C++ sources are formatted with clang-format, and the CMake files with gersemi
   CI
     GitHub Actions build and test on Linux, Windows (MSYS2 UCRT64 and MSVC) and macOS, and check the C/C++ formatting
+    CI builds and tests a project that adds ColPack with add_subdirectory()
     Pushing a version tag publishes a GitHub release with prebuilt packages for Linux, macOS and Windows
 2011-09-01 Duc Nguyen
   displayGraph() is updated to accept BipartiteGraphPartialColoringInterface &g
