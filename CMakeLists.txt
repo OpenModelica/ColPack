@@ -111,7 +111,6 @@ file(
     ${COLPACK_ROOT_DIR}/src/BipartiteGraphPartialColoring/*.h
     ${COLPACK_ROOT_DIR}/src/GeneralGraphColoring/*.h
     ${COLPACK_ROOT_DIR}/src/Recovery/*.h
-    ${COLPACK_ROOT_DIR}/src/SMPGC/*.h
     #${COLPACK_ROOT_DIR}/src/PartialD2SMPGC/*.h
 )
 file(
@@ -121,7 +120,6 @@ file(
     ${COLPACK_ROOT_DIR}/src/BipartiteGraphPartialColoring/*.cpp
     ${COLPACK_ROOT_DIR}/src/GeneralGraphColoring/*.cpp
     ${COLPACK_ROOT_DIR}/src/Recovery/*.cpp
-    ${COLPACK_ROOT_DIR}/src/SMPGC/*.cpp
     #${COLPACK_ROOT_DIR}/src/PartialD2SMPGC/*.cpp
 )
 
@@ -132,9 +130,18 @@ set(COLPACK_SOURCE_INCLUDE_DIRS
     "${COLPACK_ROOT_DIR}/src/BipartiteGraphPartialColoring"
     "${COLPACK_ROOT_DIR}/src/BipartiteGraphBicoloring"
     "${COLPACK_ROOT_DIR}/src/GeneralGraphColoring"
-    "${COLPACK_ROOT_DIR}/src/SMPGC"
     "${COLPACK_ROOT_DIR}/src/Recovery"
 )
+
+# SMPGC is the OpenMP-parallel coloring and includes <omp.h> unconditionally.
+# The rest of ColPack only uses OpenMP when _OPENMP is defined.
+if(COLPACK_ENABLE_OPENMP)
+    file(GLOB SMPGC_HEADERS ${COLPACK_ROOT_DIR}/src/SMPGC/*.h)
+    file(GLOB SMPGC_SOURCES ${COLPACK_ROOT_DIR}/src/SMPGC/*.cpp)
+    list(APPEND HEADERS ${SMPGC_HEADERS})
+    list(APPEND SOURCES ${SMPGC_SOURCES})
+    list(APPEND COLPACK_SOURCE_INCLUDE_DIRS "${COLPACK_ROOT_DIR}/src/SMPGC")
+endif()
 
 # Static library.
 # ---------------
